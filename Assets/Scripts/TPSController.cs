@@ -24,10 +24,12 @@ public class TPSController : MonoBehaviour
     public int life;
     public int score;
     public float speed;
+    public bool isIngame = true;
 
     private ThirdPersonController thirdPersonController;
     private StarterAssetsInputs starterAssetsInputs;
     private Animator animator;
+    public StarterAssetsInputs SAI;
 
     private void Awake()
     {
@@ -42,34 +44,45 @@ public class TPSController : MonoBehaviour
         Vector3 mouseWorldPosition = Vector3.zero;
         Vector2 screenSenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
 
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         Transform hitTransform = null;
         if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask))
         {
-            mouseWorldPosition = raycastHit.point;
-            hitTransform = raycastHit.transform;
+            if (isIngame)
+            {
+                mouseWorldPosition = raycastHit.point;
+                hitTransform = raycastHit.transform;
+            }
         }
 
         if (starterAssetsInputs.aim)
-        {
-            aimVirtualCamera.gameObject.SetActive(true);
-            thirdPersonController.SetSensitivity(aimSensitivity);
-            thirdPersonController.SetRotateOnMove(false);
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
+        {   
+            if(isIngame)
+            {
+                aimVirtualCamera.gameObject.SetActive(true);
+                thirdPersonController.SetSensitivity(aimSensitivity);
+                thirdPersonController.SetRotateOnMove(false);
+                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
 
-            Vector3 worldAimTarget = mouseWorldPosition;
-            worldAimTarget.y = transform.position.y;
-            Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
+                Vector3 worldAimTarget = mouseWorldPosition;
+                worldAimTarget.y = transform.position.y;
+                Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
 
-            transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
+                transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
+            }
         }
         else
         {
-            aimVirtualCamera.gameObject.SetActive(false);
-            thirdPersonController.SetSensitivity(normalSensitivity);
-            thirdPersonController.SetRotateOnMove(true);
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+            if(isIngame)
+            {
+                aimVirtualCamera.gameObject.SetActive(false);
+                thirdPersonController.SetSensitivity(normalSensitivity);
+                thirdPersonController.SetRotateOnMove(true);
+                animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+            }
+            
         }
 
 
@@ -88,13 +101,20 @@ public class TPSController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Enemy")
+        if (other.gameObject.tag == "Enemy" || other.gameObject.tag == "EnemyD")
         {
             life--;
             gameManager.UpdateLifeIcon(life);
-
-            if (life == 0)
+            if (other.gameObject.tag == "EnemyD")
             {
+                life = 0;
+                gameManager.UpdateLifeIcon(life);
+                gameManager.GameOver();
+            }
+
+            if (life <= 0)
+            {
+                SAI.cursorLocked = false;
                 gameManager.GameOver();
             }
             other.gameObject.SetActive(false);

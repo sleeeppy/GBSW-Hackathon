@@ -134,8 +134,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyName: B
-  speed: 6
-  health: 3
+  speed: 6.5
+  health: 1
   enemyScore: 50
   gameManager: {fileID: 0}
   objectManager: {fileID: 0}

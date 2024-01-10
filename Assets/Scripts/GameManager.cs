@@ -1,9 +1,11 @@
+using StarterAssets;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,7 +17,7 @@ public class GameManager : MonoBehaviour
     public Animator fadeAnim;
     public Transform playerPos;
 
-    public string[] enemyObjs;
+    public string[] enemyObjs; 
     public Transform[] spawnPoints;
 
     public float nextSpawnDelay;
@@ -26,24 +28,25 @@ public class GameManager : MonoBehaviour
     public Image[] lifeImage;
     public Sprite lifeOverSprite;
     public Sprite lifeOnSprite;
+    public Sprite mouseOverSprite;
+    public Sprite mouseOnSprite;
     public GameObject gameOverSet;
     public ObjectManager objectManager;
+    public Image button;
 
     public List<Spawn> spawnList;
     public int spawni;
     public bool spawnEnd;
 
-    SpriteRenderer spriteRenderer;
-    Animator anim;
 
-    void Awake()
+    private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
         spawnList = new List<Spawn>();
         enemyObjs = new string[] { "EnemyA", "EnemyB", "EnemyC", "EnemyD" };
         StageStart();
     }
+
+
 
     public void StageStart()
     {
@@ -110,6 +113,7 @@ public class GameManager : MonoBehaviour
 
         // Formatting
         scoreText.text = string.Format("{0:n0}", playerLogic.score);
+
     }
 
     void SpawnEnemy()
@@ -142,20 +146,7 @@ public class GameManager : MonoBehaviour
         enemyLogic.gameManager = this;
         enemyLogic.objectManager = objectManager;
 
-        if (enemyPoint == 5 || enemyPoint == 6)
-        {
-            enemy.transform.Rotate(Vector3.back * 90);
-            rigid.velocity = new Vector2(enemyLogic.speed * (-1), -1);
-        }
-        else if (enemyPoint == 7 || enemyPoint == 8)
-        {
-            enemy.transform.Rotate(Vector3.forward * 90);
-            rigid.velocity = new Vector2(enemyLogic.speed, -1);
-        }
-        else
-        {
-            rigid.velocity = new Vector3(enemyLogic.speed * (-1), 0, 0);
-        }
+        rigid.velocity = new Vector3(enemyLogic.speed * (-1), 0, 0);
 
         spawni++;
         if (spawni == spawnList.Count)
@@ -180,18 +171,34 @@ public class GameManager : MonoBehaviour
             lifeImage[i].color = new Color(1, 1, 1, 1);
             lifeImage[i].sprite = lifeOnSprite;
         }
+
     }
 
     public void GameOver()
     {
-        gameOverSet.SetActive(true);
-        Time.timeScale = 0;
+        SceneManager.LoadScene(2);
     }
 
     public void GameRetry()
     {
         SceneManager.LoadScene(0);
         Time.timeScale = 1f;
+        fadeAnim.SetTrigger("In");
     }
 
+
+    public void GoToMenu()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void ChangeButton()
+    {
+        button.sprite = mouseOnSprite;
+    }
+
+    public void ChangeButtonend()
+    {
+        button.sprite = mouseOverSprite;
+    }
 }

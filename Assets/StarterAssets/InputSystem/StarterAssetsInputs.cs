@@ -1,6 +1,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 #endif
 
 namespace StarterAssets
@@ -19,15 +20,14 @@ namespace StarterAssets
 		public bool analogMovement;
 
 		[Header("Mouse Cursor Settings")]
-		public bool cursorLocked = true;
-		public bool cursorInputForLook = true;
+		public bool cursorLocked = false;
+		public bool cursorInputForLook;
 
 #if ENABLE_INPUT_SYSTEM
-		public void OnMove(InputValue value)
-		{
-			MoveInput(value.Get<Vector2>());
-		}
-
+        private void Update()
+        {
+			MouseCursor();
+        }
 		public void OnLook(InputValue value)
 		{
 			if(cursorInputForLook)
@@ -35,13 +35,30 @@ namespace StarterAssets
 				LookInput(value.Get<Vector2>());
 			}
 		}
+        private void OnLevelWasLoaded()
+        {
+            Scene currentScene = SceneManager.GetActiveScene();
+            int currentSceneIndex = currentScene.buildIndex;
 
-		public void OnJump(InputValue value)
+            if (currentSceneIndex == 0)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else if (currentSceneIndex != 0)
+            {
+				Cursor.lockState = CursorLockMode.None;
+            }
+        }
+
+        public void OnJump(InputValue value)
 		{
 			JumpInput(value.isPressed);
 		}
-
-		public void OnSprint(InputValue value)
+        public void OnMove(InputValue value)
+        {
+            MoveInput(value.Get<Vector2>());
+        }
+        public void OnSprint(InputValue value)
 		{
 			SprintInput(value.isPressed);
 		}
@@ -56,13 +73,10 @@ namespace StarterAssets
 			ShootInput(value.isPressed);
 		}
 #endif
-
-
-		public void MoveInput(Vector2 newMoveDirection)
-		{
-			move = newMoveDirection;
-		} 
-
+        public void MoveInput(Vector2 newMoveDirection)
+        {
+            move = newMoveDirection;
+        }
 		public void LookInput(Vector2 newLookDirection)
 		{
 			look = newLookDirection;
@@ -96,6 +110,22 @@ namespace StarterAssets
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
-	}
+        private void MouseCursor()
+        {
+            Scene currentScene = SceneManager.GetActiveScene();
+            int currentSceneIndex = currentScene.buildIndex;
+
+            if (currentSceneIndex == 0)
+            {
+                cursorLocked = true;
+                cursorInputForLook = true;
+            }
+            else if (currentSceneIndex == 2)
+            {
+                cursorLocked = false;
+                cursorInputForLook = false;
+            }
+        }
+    }
 	
 }

@@ -23,12 +23,9 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-
         collider = gameObject.GetComponent<Collider>();
-        gameManager = GetComponent<GameManager>();
         objectManager = GetComponent<ObjectManager>();
     }
-
 
     void OnTriggerEnter(Collider other)
     {
@@ -37,10 +34,35 @@ public class Enemy : MonoBehaviour
             health--;
             if(health == 0)
             {
+                TPSController playerLogic = player.GetComponent<TPSController>();
+                playerLogic.score += enemyScore;
+
                 Destroy(collider);
                 bullet = other.gameObject;
                 StartCoroutine(Desttory2dObject());
-                mesh.SetActive(true);
+
+                if (enemyName == "D")
+                    gameManager.StageEnd();
+            }
+        }
+        else if( other.gameObject.tag == "Border")
+        {
+            TPSController playerLogic = player.GetComponent<TPSController>();
+
+            gameObject.SetActive(false);
+            playerLogic.life--;
+            
+            gameManager.UpdateLifeIcon(playerLogic.life);
+
+            if (enemyName == "D")
+            {
+                playerLogic.life = 0;
+                gameManager.GameOver();
+            }
+
+            if(playerLogic.life <= 0)
+            {
+                gameManager.GameOver();
             }
         }
     }
@@ -51,6 +73,11 @@ public class Enemy : MonoBehaviour
         
         yield return new WaitForSeconds(0.1f);
         objects.SetActive(false);
+
+        mesh.SetActive(true);
+
+        yield return new WaitForSeconds(1f);
+        mesh.SetActive(false);
     }
 
 }
