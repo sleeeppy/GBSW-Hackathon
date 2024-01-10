@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     public Animator fadeAnim;
     public Transform playerPos;
 
-    public string[] enemyObjs; 
+    public string[] enemyObjs;
     public Transform[] spawnPoints;
 
     public float nextSpawnDelay;
@@ -200,5 +200,10 @@ public class GameManager : MonoBehaviour
     public void ChangeButtonend()
     {
         button.sprite = mouseOverSprite;
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

@@ -25,12 +25,6 @@ public class BulletProjectile : MonoBehaviour
         if(other.GetComponent<BulletTarget>() != null)
         {
             Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
-            while (true)
-            {
-                vfxHitGreen.transform.Translate(other.transform.position);
-            }
-
-            StartCoroutine(Destroyvfx());
         }
         else
         {
@@ -38,10 +32,5 @@ public class BulletProjectile : MonoBehaviour
         }
         Destroy(gameObject);
     }
-
-    private IEnumerator Destroyvfx()
-    {
-        yield return new WaitForSeconds(0.2f);
-        Destroy(vfxHitGreen);
-    }
 }
+    

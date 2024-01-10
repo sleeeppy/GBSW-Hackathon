@@ -30,9 +30,10 @@ public class TPSController : MonoBehaviour
     private StarterAssetsInputs starterAssetsInputs;
     private Animator animator;
     public StarterAssetsInputs SAI;
+    public GameObject railGun;
 
     private void Awake()
-    {
+    {   
         thirdPersonController = GetComponent<ThirdPersonController>();
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
         animator = GetComponent<Animator>();
@@ -59,8 +60,8 @@ public class TPSController : MonoBehaviour
 
         if (starterAssetsInputs.aim)
         {   
-            if(isIngame)
-            {
+                railGun.SetActive(true);
+
                 aimVirtualCamera.gameObject.SetActive(true);
                 thirdPersonController.SetSensitivity(aimSensitivity);
                 thirdPersonController.SetRotateOnMove(false);
@@ -71,17 +72,16 @@ public class TPSController : MonoBehaviour
                 Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
 
                 transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
-            }
+
         }
         else
         {
-            if(isIngame)
-            {
+            railGun.SetActive(false);
+
                 aimVirtualCamera.gameObject.SetActive(false);
                 thirdPersonController.SetSensitivity(normalSensitivity);
                 thirdPersonController.SetRotateOnMove(true);
                 animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
-            }
             
         }
 

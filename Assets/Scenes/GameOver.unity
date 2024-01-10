@@ -1945,6 +1945,7 @@ MonoBehaviour:
   speed: 0
   isIngame: 1
   SAI: {fileID: 0}
+  railGun: {fileID: 0}
 --- !u!64 &1155578892
 MeshCollider:
   m_ObjectHideFlags: 0
